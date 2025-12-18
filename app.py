@@ -152,6 +152,21 @@ def remove_cart_item():
         print(f"Error: {str(e)}")
         return jsonify({"exito": False, "error": str(e)}), 500
 
+@app.route("/cart/clear", methods=["POST"])
+def clear_cart():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+
+        if not user_id:
+            return jsonify({"exito": False, "error": "Se requiere user_id"}), 400
+
+        supabase.table("cart_items").delete().eq("user_id", user_id).execute()
+
+        return jsonify({"exito": True, "mensaje": "Carrito vaciado"}), 200
+
+    except Exception as e:
+        return jsonify({"exito": False, "error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001, debug=True)
